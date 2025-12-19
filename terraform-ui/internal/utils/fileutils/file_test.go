@@ -1,9 +1,20 @@
 package fileutils
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestOpenFile(t *testing.T) {
-	f, err := OpenFile("../../../test/testdata/test.txt")
+	tmpDir, err := os.MkdirTemp("../../../test/testdata", "tmp")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.RemoveAll(tmpDir)
+
+	f, err := OpenFile(filepath.Join(tmpDir, "test.txt"))
 	if err != nil {
 		t.Fatal(err)
 	}

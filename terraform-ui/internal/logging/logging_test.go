@@ -3,6 +3,7 @@ package logging
 import (
 	"log/slog"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/tbauriedel/terraform-ui/internal/config"
@@ -34,10 +35,17 @@ func TestNewLoggerStdout(t *testing.T) {
 }
 
 func TestNewLoggerFile(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("../../test/testdata", "tmp")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.RemoveAll(tmpDir)
+
 	c := config.Config{
 		Logging: config.Logger{
 			Type: "file",
-			File: "../../test/testdata/test.log",
+			File: filepath.Join(tmpDir, "test.log"),
 		},
 	}
 
