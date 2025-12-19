@@ -8,7 +8,7 @@ func TestLoadDefaults(t *testing.T) {
 }
 
 func TestLoadFromFile(t *testing.T) {
-	c, err := LoadFromJSONFile("../../test/data/config_test.json")
+	c, err := LoadFromJSONFile("../../test/testdata/config/config_test.json")
 	if err != nil {
 		t.Fatal(err)
 	}

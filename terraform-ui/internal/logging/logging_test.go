@@ -37,7 +37,7 @@ func TestNewLoggerFile(t *testing.T) {
 	c := config.Config{
 		Logging: config.Logger{
 			Type: "file",
-			File: "../../test/data/test.log",
+			File: "../../test/testdata/test.log",
 		},
 	}
 

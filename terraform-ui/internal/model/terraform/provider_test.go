@@ -1,0 +1,66 @@
+package model
+
+import (
+	"encoding/json"
+	"reflect"
+	"testing"
+)
+
+func TestHasOptions(t *testing.T) {
+	p := Provider{}
+
+	// Test non-empty options
+	p.Options = []byte("{'hello':'world'}")
+	if !p.HasOptions() {
+		t.Fatal("options should be set")
+	}
+
+	// Test empty options
+	p.Options = nil
+	if p.HasOptions() {
+		t.Fatal("options should not be set")
+	}
+}
+
+func TestValidateOptions(t *testing.T) {
+	p := Provider{}
+
+	// Test valid options
+	p.Options = []byte(`{"hello":"world"}`)
+
+	if err := p.ValidateOptions(); err != nil {
+		t.Fatal("options should be valid")
+	}
+
+	// Test invalid options
+	p.Options = []byte("hello''world")
+	if err := p.ValidateOptions(); err == nil {
+		t.Fatal("options should be invalid")
+	}
+}
+
+func TestGetProviderConfig(t *testing.T) {
+	p := Provider{
+		RequiredTerraformVersion: ">= 0.1.0",
+		ProviderName:             "aws",
+		Source:                   "hashicorp/aws",
+		Version:                  "3.28.0",
+		Options:                  []byte(`{"region":"eu-central-1"}`),
+	}
+
+	config, err := p.GetProviderConfig()
+	if err != nil {
+		t.Fatalf("failed to create provider config: %s", err.Error())
+	}
+
+	validConfig := `{"provider":{"aws":{"region":"eu-central-1"}},"terraform":{"required_providers":{"aws":{"source":"hashicorp/aws","version":"3.28.0"}},"required_version":">= 0.1.0"}}`
+
+	var actual, expected interface{}
+
+	json.Unmarshal([]byte(config), &actual)
+	json.Unmarshal([]byte(validConfig), &expected)
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatal("configs do not match")
+	}
+}

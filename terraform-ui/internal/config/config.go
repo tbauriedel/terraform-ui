@@ -64,9 +64,9 @@ func LoadFromJSONFile(file string) (Config, error) {
 	return c, nil
 }
 
-// GetConfigRedacted returns a new Config object, with sensitive data masked with RedactionPlaceholder
+// GetConfigRedacted returns a new Config object, with sensitive testdata masked with RedactionPlaceholder
 //
-// Sensitive data includes:
+// Sensitive testdata includes:
 //   - Database.User
 //   - Database.Password
 func (c Config) GetConfigRedacted() Config {
