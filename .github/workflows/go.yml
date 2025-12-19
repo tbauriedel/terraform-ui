@@ -1,0 +1,39 @@
+---
+name: GoLang
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                go-version: 1.25.3
+            
+            - name: Build
+              working-directory: ./terraform-ui
+              run: go build -o terraform-ui cmd/terraform-ui/main.go
+    test:
+        name: Test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+
+            - name: Set up Go
+              uses: actions/setup-go@v6
+              with:
+                go-version: 1.25.3
+            
+            - name: Test
+              working-directory: ./terraform-ui
+              run: go test --cover ./...
