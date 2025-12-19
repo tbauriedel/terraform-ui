@@ -28,8 +28,8 @@ func (p *Provider) HasOptions() bool {
 	return true
 }
 
-// ValidateOptions validates whether the options are valid JSON
-func (p *Provider) ValidateOptions() error {
+// ValidateOptionsSyntax validates whether the options are valid JSON
+func (p *Provider) ValidateOptionsSyntax() error {
 	if !p.HasOptions() {
 		return nil
 	}
@@ -43,9 +43,9 @@ func (p *Provider) ValidateOptions() error {
 	return nil
 }
 
-// GetProviderConfig returns the Terraform provider configuration as JSON object
+// GetProviderConfig returns the Terraform provider configuration as JSON string
 func (p *Provider) GetProviderConfig() (string, error) {
-	if err := p.ValidateOptions(); err != nil {
+	if err := p.ValidateOptionsSyntax(); err != nil {
 		return "", err
 	}
 

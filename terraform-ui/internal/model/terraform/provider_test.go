@@ -23,19 +23,19 @@ func TestHasOptions(t *testing.T) {
 	}
 }
 
-func TestValidateOptions(t *testing.T) {
+func TestValidateOptionsSyntax(t *testing.T) {
 	p := Provider{}
 
 	// Test valid options
 	p.Options = []byte(`{"hello":"world"}`)
 
-	if err := p.ValidateOptions(); err != nil {
+	if err := p.ValidateOptionsSyntax(); err != nil {
 		t.Fatal("options should be valid")
 	}
 
 	// Test invalid options
 	p.Options = []byte("hello''world")
-	if err := p.ValidateOptions(); err == nil {
+	if err := p.ValidateOptionsSyntax(); err == nil {
 		t.Fatal("options should be invalid")
 	}
 }
