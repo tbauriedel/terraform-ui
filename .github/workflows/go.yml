@@ -23,6 +23,7 @@ jobs:
               working-directory: ./terraform-ui
               run: go build -o terraform-ui cmd/terraform-ui/main.go
     test:
+        needs: build
         name: Test
         runs-on: ubuntu-latest
         steps:
