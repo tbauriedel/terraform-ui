@@ -1,8 +1,9 @@
+.idea
 NOTES.md
-terraform-ui/.idea
-terraform-ui/NOTES.md
-terraform-ui/test/data/test.log
-terraform-ui/test/data/test.txt
-terraform-ui/terraform-ui
-terraform-ui/test/testdata/tmp*
-terraform-ui/TODO.md
+terraform-ui-core/.idea
+terraform-ui-core/NOTES.md
+terraform-ui-core/test/data/test.log
+terraform-ui-core/test/data/test.txt
+terraform-ui-core/terraform-ui
+terraform-ui-core/test/testdata/tmp*
+terraform-ui-core/TODO.md

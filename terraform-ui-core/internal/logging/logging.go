@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/tbauriedel/terraform-ui/internal/config"
+	"github.com/tbauriedel/terraform-ui-core/internal/config"
 )
 
 type Logger struct {

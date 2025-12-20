@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tbauriedel/terraform-ui/internal/config"
+	"github.com/tbauriedel/terraform-ui-core/internal/config"
 )
 
 func TestMapLogLevel(t *testing.T) {

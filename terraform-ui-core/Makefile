@@ -1,4 +1,4 @@
-BINARY=terraform-ui
+BINARY=terraform-ui-core
 
 all: build testing cleanup
 

@@ -20,7 +20,7 @@ Inside the `logging` section, the following settings can be configured.
 {
   "logging": {
     "type": "stdout",
-    "file": "terraform-ui.log",
+    "file": "terraform-ui-core.log",
     "level": "info"
   }
 }

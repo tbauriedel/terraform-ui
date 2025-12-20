@@ -20,8 +20,8 @@ jobs:
                 go-version: 1.25.3
             
             - name: Build
-              working-directory: ./terraform-ui
-              run: go build -o terraform-ui cmd/terraform-ui/main.go
+              working-directory: ./terraform-ui-core
+              run: go build -o terraform-ui-core cmd/terraform-ui-core/main.go
     test:
         needs: build
         name: Test
@@ -36,5 +36,5 @@ jobs:
                 go-version: 1.25.3
             
             - name: Test
-              working-directory: ./terraform-ui
+              working-directory: ./terraform-ui-core
               run: go test --cover ./...

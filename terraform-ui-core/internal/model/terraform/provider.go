@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/tbauriedel/terraform-ui/internal/utils/fileutils"
+	"github.com/tbauriedel/terraform-ui-core/internal/utils/fileutils"
 )
 
 // Provider represents a Terraform provider

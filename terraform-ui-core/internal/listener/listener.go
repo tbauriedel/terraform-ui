@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/tbauriedel/terraform-ui/internal/config"
-	"github.com/tbauriedel/terraform-ui/internal/logging"
+	"github.com/tbauriedel/terraform-ui-core/internal/config"
+	"github.com/tbauriedel/terraform-ui-core/internal/logging"
 )
 
 type Listener struct {

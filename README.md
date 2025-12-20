@@ -1,4 +1,4 @@
-s# terraform-ui
+# terraform-ui
 
 > `terraform-ui` is under development. A first release candidate will be released "soon".
 
@@ -12,10 +12,10 @@ terraform-ui consists of two components.
 
 ### terraform-ui
 
-**terraform-ui** is the backbone of the whole stack.  
+**terraform-ui-core** is the backbone of the whole stack.  
 Triggered via REST API, terraform-ui executes terraform commands to provision infrastructure.
 
-Source code and detailed documentation is located under [terraform-ui](./terraform-ui/)
+Source code and detailed documentation is located under [terraform-ui-core](./terraform-ui-core)
 
 ### terraform-ui-web
 
@@ -31,7 +31,7 @@ Since this is a "mono-repository" for more than one component of terraform-ui, c
 
 Commit naming:
 - `gh-actions - ...`: Prefix for GitHub Action changes
-- `terraform-ui - ..`: Prefix for backend changes
+- `terraform-ui-core - ..`: Prefix for backend changes
 - `terraform-ui-web - ...`: Prefix for frontend changes
 
 Changes that are not part of actions, backend or frontend doenst need a consistent prefix.
