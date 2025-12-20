@@ -1,6 +1,6 @@
-# terraform-ui
+# terraform-ui-core
 
-**terraform-ui** is the backbone of the whole stack.  
+**terraform-ui-core** is the backbone of the whole stack.  
 Triggered via REST API, terraform-ui executes terraform commands to provision infrastructure.
 
 # Documentation

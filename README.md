@@ -10,7 +10,7 @@ More details can be found in the [idea description](./IDEA.md).
 
 terraform-ui consists of two components.
 
-### terraform-ui
+### terraform-ui-core
 
 **terraform-ui-core** is the backbone of the whole stack.  
 Triggered via REST API, terraform-ui executes terraform commands to provision infrastructure.
