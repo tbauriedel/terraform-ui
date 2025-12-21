@@ -47,22 +47,26 @@ Inside the `listener` section, the following settings can be configured.
     "tls_enabled": true,
     "tls_cert_file": "server.crt",
     "tls_key_file": "server.key",
-    "tls_skip_verify": false
+    "tls_skip_verify": false,
+    "rateLimitBucketSize": 25,
+    "rateLimitGeneration": 5
   }
 }
 ```
 
 **Reference**:
 
-| Field             | Type                   | Required    | Default | Description                                                                                                       |
-|-------------------|------------------------|-------------|---------|-------------------------------------------------------------------------------------------------------------------|
-| `listen_addr`     | string                 | Yes         | `:4890` | Network address the server listens on. Format: `host:port` (e.g. `:4890`, `127.0.0.1:8080`).                      |
-| `read_timeout`    | string (time.Duration) | Yes         | `10s`   | Maximum duration for reading the entire request. Uses Go duration format (e.g. `5s`, `1m`). `0` means no timeout. |
-| `idle_timeout`    | string (time.Duration) | Yes         | `120s`  | Maximum amount of time to wait for the next request when keep-alives are enabled. Go duration format.             |
-| `tls_enabled`     | boolean                | Yes         | `false` | Enables TLS for the listener.                                                                                     |
-| `tls_cert_file`   | string                 | Conditional | —       | Path to the TLS certificate file (PEM). Required if `tls_enabled` is `true`.                                      |
-| `tls_key_file`    | string                 | Conditional | —       | Path to the TLS private key file (PEM). Required if `tls_enabled` is `true`.                                      |
-| `tls_skip_verify` | boolean                | Conditional | `false` | Disables TLS certificate verification. **Use only for testing.**                                                  |
+| Field                 | Type                   | Required    | Default | Description                                                                                                                |
+|-----------------------|------------------------|-------------|---------|----------------------------------------------------------------------------------------------------------------------------|
+| `listen_addr`         | string                 | Yes         | `:4890` | Network address the server listens on. Format: `host:port` (e.g. `:4890`, `127.0.0.1:8080`).                               |
+| `read_timeout`        | string (time.Duration) | Yes         | `10s`   | Maximum duration for reading the entire request. Uses Go duration format (e.g. `5s`, `1m`). `0` means no timeout.          |
+| `idle_timeout`        | string (time.Duration) | Yes         | `120s`  | Maximum amount of time to wait for the next request when keep-alives are enabled. Go duration format.                      |
+| `tls_enabled`         | boolean                | Yes         | `false` | Enables TLS for the listener.                                                                                              |
+| `tls_cert_file`       | string                 | Conditional | —       | Path to the TLS certificate file (PEM). Required if `tls_enabled` is `true`.                                               |
+| `tls_key_file`        | string                 | Conditional | —       | Path to the TLS private key file (PEM). Required if `tls_enabled` is `true`.                                               |
+| `tls_skip_verify`     | boolean                | Conditional | `false` | Disables TLS certificate verification. **Use only for testing.**                                                           |
+| `rateLimitBucketSize` | float64                | Conditional | `25`    | Number of tokens in the bucket. Check the "Rate Limiting" section in [REST-API docs](./20-REST-API.md) for details.        |
+| `rateLimitGeneration` | int                    | Conditional | `5`     | Number of tokens generated per second. Check the "Rate Limiting" section in [REST-API docs](./20-REST-API.md) for details. 
 
 ---
 

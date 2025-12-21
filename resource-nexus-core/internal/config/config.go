@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 // Config represents the configuration of resource-nexus-core.
@@ -16,13 +18,15 @@ type Config struct {
 
 // Listener represents the listener configuration.
 type Listener struct {
-	ListenAddr    string        `json:"listenAddr"`
-	ReadTimeout   time.Duration `json:"readTimeout"`
-	IdleTimeout   time.Duration `json:"idleTimeout"`
-	TLSEnabled    bool          `json:"tlsEnabled"`
-	TLSSkipVerify bool          `json:"tlsSkipVerify"`
-	TLSCertPath   string        `json:"tlsCertFile"`
-	TLSKeyPath    string        `json:"tlsKeyFile"`
+	ListenAddr          string        `json:"listenAddr"`
+	ReadTimeout         time.Duration `json:"readTimeout"`
+	IdleTimeout         time.Duration `json:"idleTimeout"`
+	TLSEnabled          bool          `json:"tlsEnabled"`
+	TLSSkipVerify       bool          `json:"tlsSkipVerify"`
+	TLSCertPath         string        `json:"tlsCertFile"`
+	TLSKeyPath          string        `json:"tlsKeyFile"`
+	RateLimitGeneration rate.Limit    `json:"rateLimitGeneration"`
+	RateLimitBucketSize int           `json:"rateLimitBucketSize"`
 }
 
 // Logger represents the logging configuration.
@@ -56,10 +60,12 @@ func LoadDefaults() Config {
 		},
 		Database: Database{},
 		Listener: Listener{
-			ListenAddr:    ":4890",
-			ReadTimeout:   10 * time.Second,
-			IdleTimeout:   120 * time.Second,
-			TLSSkipVerify: false,
+			ListenAddr:          ":4890",
+			ReadTimeout:         10 * time.Second,
+			IdleTimeout:         120 * time.Second,
+			TLSSkipVerify:       false,
+			RateLimitGeneration: 5,
+			RateLimitBucketSize: 25,
 		},
 	}
 }

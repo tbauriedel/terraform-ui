@@ -104,6 +104,10 @@ func main() {
 		conf.Listener,
 		logger,
 		listener.WithMiddleWare(listener.MiddlewareLogging(logger)),
+		listener.WithMiddleWare(listener.MiddlewareGlobalRateLimiter(
+			conf.Listener.RateLimitGeneration,
+			conf.Listener.RateLimitBucketSize),
+		),
 	)
 
 	// Start listener in the background
