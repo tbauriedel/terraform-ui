@@ -1,6 +1,10 @@
 BINARY=resource-nexus-core
 
-all: build testing cleanup
+all: lint build testing cleanup
+
+lint:
+	@echo "~RUNNING LINT~"
+	golangci-lint run --config ../.golangci.yml
 
 build:
 	@echo "~RUNNING BUILD~"

@@ -11,7 +11,19 @@ on:
             - "resource-nexus-core/**"
 
 jobs:
+    lint:
+      name: lint
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v6
+
+        - name: golangci-lint
+          uses: golangci/golangci-lint-action@v9
+          with:
+            working-directory: ./resource-nexus-core
+
     build:
+        needs: lint
         name: Build
         runs-on: ubuntu-latest
         steps:

@@ -7,11 +7,12 @@ import (
 	"github.com/tbauriedel/resource-nexus-core/internal/config"
 )
 
+// Logger is an instance of slog.Logger.
 type Logger struct {
 	*slog.Logger
 }
 
-// mapLogLevel maps a string level to a slog.Level
+// mapLogLevel maps a string level to a slog.Level.
 func mapLogLevel(level string) slog.Level {
 	switch level {
 	case "debug":
@@ -25,7 +26,7 @@ func mapLogLevel(level string) slog.Level {
 	}
 }
 
-// NewLoggerStdout creates a new logger that writes to stdout in JSON format
+// NewLoggerStdout creates a new logger that writes to stdout in JSON format.
 func NewLoggerStdout(c config.Logger) *Logger {
 	var l *slog.Logger
 
@@ -40,6 +41,7 @@ func NewLoggerStdout(c config.Logger) *Logger {
 	}
 }
 
+// NewLoggerFile creates a new logger that writes to a file in JSON format.
 func NewLoggerFile(c config.Logger, f *os.File) *Logger {
 	var l *slog.Logger
 

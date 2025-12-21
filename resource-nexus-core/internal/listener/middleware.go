@@ -7,20 +7,20 @@ import (
 	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
-// Option for Listener
+// Option for Listener.
 type Option func(*Listener)
 
-// Middleware is a function that wraps an http.Handler
+// Middleware is a function that wraps an http.Handler.
 type Middleware func(http.Handler) http.Handler
 
-// WithMiddleWare adds middleware to the listener
+// WithMiddleWare adds middleware to the listener.
 func WithMiddleWare(m Middleware) Option {
 	return func(l *Listener) {
 		l.middlewares = append(l.middlewares, m)
 	}
 }
 
-// MiddlewareLogging wraps the http.Handler with logging middleware
+// MiddlewareLogging wraps the http.Handler with logging middleware.
 func MiddlewareLogging(logger *logging.Logger) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

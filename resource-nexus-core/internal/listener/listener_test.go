@@ -12,11 +12,10 @@ import (
 
 func TestNewListener(t *testing.T) {
 	c := config.Listener{}
-	ctx := context.TODO()
 	log := logging.NewLoggerStdout(config.Logger{Type: "stdout", Level: "debug"})
 
 	// Just returns the struct, nothing to test
-	_ = NewListener(c, ctx, log)
+	_ = NewListener(c, log)
 }
 
 func getListener(ctx context.Context) Listener {
@@ -31,7 +30,6 @@ func getListener(ctx context.Context) Listener {
 	l := Listener{
 		logger:      log,
 		config:      c,
-		context:     ctx,
 		multiplexer: nil,
 	}
 
@@ -80,10 +78,10 @@ func TestListenerSecure(t *testing.T) {
 
 	l := getListener(ctx)
 
-	l.config.TlsEnabled = true
-	l.config.TlsSkipVerify = true
-	l.config.TlsKeyPath = "../../test/testdata/config/dummy-key.pem"
-	l.config.TlsCertPath = "../../test/testdata/config/dummy-cert.pem"
+	l.config.TLSEnabled = true
+	l.config.TLSSkipVerify = true
+	l.config.TLSKeyPath = "../../test/testdata/config/dummy-key.pem"
+	l.config.TLSCertPath = "../../test/testdata/config/dummy-cert.pem"
 
 	// start listener
 	go func() {

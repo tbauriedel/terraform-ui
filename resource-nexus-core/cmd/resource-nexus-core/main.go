@@ -18,14 +18,14 @@ import (
 	"github.com/tbauriedel/resource-nexus-core/internal/utils/netutils"
 )
 
-var (
-	configPath string
-	conf       config.Config
-	logger     *logging.Logger
-	err        error
-)
+func main() {
+	var (
+		err        error
+		conf       config.Config
+		configPath string
+		logger     *logging.Logger
+	)
 
-func init() {
 	// Set locale to C to avoid translations in command output
 	_ = os.Setenv("LANG", "C")
 
@@ -48,47 +48,49 @@ func init() {
 	} else {
 		slog.Info("loading config from file", "file", configPath)
 
+		var err error
+
 		conf, err = config.LoadFromJSONFile(configPath)
 		if err != nil {
 			slog.Error(err.Error())
-			os.Exit(1)
+			closeAndStop(nil, 1)
 		}
 	}
 
 	slog.Info("configuration loaded")
-}
 
-func main() {
+	var f *os.File
+
 	// init logger
 	if conf.Logging.Type == "file" {
 		slog.Debug("creating logger for type 'file'")
 
 		// open logfile
-		f, err := fileutils.OpenFile(conf.Logging.File)
+		f, err = fileutils.OpenFile(conf.Logging.File)
 		if err != nil {
 			slog.Error(err.Error())
-			os.Exit(1)
+			closeAndStop(f, 1)
 		}
 
-		// close the logfile when main is done
-		defer f.Close()
+		defer func(f *os.File) {
+			_ = f.Close()
+		}(f)
 
 		// create logger for type 'file'
 		logger = logging.NewLoggerFile(conf.Logging, f)
-
 	} else {
 		slog.Debug("creating logger for type 'stdout'")
 
 		// create logger for type 'stdout'
 		logger = logging.NewLoggerStdout(conf.Logging)
-
 	}
 
 	// Get redacted config for initial log output
 	redacted, err := json.Marshal(conf.GetConfigRedacted())
 	if err != nil {
 		logger.Error(fmt.Sprint("failed to marshal config", "error", err))
-		os.Exit(1)
+
+		closeAndStop(f, 1)
 	}
 
 	logger.Debug("starting with configuration", "config", redacted)
@@ -100,7 +102,6 @@ func main() {
 	// create new listener
 	l := listener.NewListener(
 		conf.Listener,
-		context.Background(),
 		logger,
 		listener.WithMiddleWare(listener.MiddlewareLogging(logger)),
 	)
@@ -110,10 +111,11 @@ func main() {
 		time.Sleep(2 * time.Second)
 
 		logger.Info(fmt.Sprintf("starting listener on '%s'", conf.Listener.ListenAddr))
+
 		err := l.Start()
 		if err != nil {
 			logger.Error(err.Error())
-			os.Exit(1)
+			closeAndStop(f, 1)
 		}
 	}()
 
@@ -122,10 +124,10 @@ func main() {
 	signal.Notify(shutdownSignal, syscall.SIGINT, syscall.SIGTERM)
 
 	// Wait for the listener to start. shutdown after 10 seconds
-	err = netutils.WaitForConnection(conf.Listener.ListenAddr, 10*time.Second)
+	err = netutils.WaitForConnection(conf.Listener.ListenAddr, conf.Listener.TLSSkipVerify, 10*time.Second)
 	if err != nil {
 		logger.Error(fmt.Sprintf("waited 10 seconds for listener to start without success. shutting down. %s", err.Error()))
-		os.Exit(1)
+		closeAndStop(f, 1)
 	}
 
 	// send messages that resource-nexus-core is ready to server requests
@@ -149,6 +151,13 @@ func main() {
 	}
 
 	logger.Info("shut down resource-nexus-core")
+}
 
-	return
+// closeAndStop closes the logfile and exits the application with the given code.
+func closeAndStop(logfile *os.File, code int) { //nolint:unparam
+	if logfile != nil {
+		_ = logfile.Close()
+	}
+
+	os.Exit(code)
 }

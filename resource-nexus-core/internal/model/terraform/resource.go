@@ -14,21 +14,19 @@ type Resource struct {
 	Options      []byte
 }
 
-// HasOptions checks if the provider has options
+// HasOptions checks if the provider has options.
 func (r *Resource) HasOptions() bool {
-	if r.Options == nil {
-		return false
-	}
-	return true
+	return r.Options != nil
 }
 
-// ValidateOptionsSyntax validates whether the options are valid JSON
+// ValidateOptionsSyntax validates whether the options are valid JSON.
 func (r *Resource) ValidateOptionsSyntax() error {
 	if !r.HasOptions() {
 		return nil
 	}
 
 	var js json.RawMessage
+
 	err := json.Unmarshal(r.Options, &js)
 	if err != nil {
 		return fmt.Errorf("options are non valid json: %w", err)
@@ -37,23 +35,24 @@ func (r *Resource) ValidateOptionsSyntax() error {
 	return nil
 }
 
-// GetResourceConfig returns the Terraform resource configuration as JSON string
+// GetResourceConfig returns the Terraform resource configuration as JSON string.
 func (r *Resource) GetResourceConfig() (string, error) {
-	if err := r.ValidateOptionsSyntax(); err != nil {
+	err := r.ValidateOptionsSyntax()
+	if err != nil {
 		return "", err
 	}
 
-	result := map[string]interface{}{
-		"resource": map[string]interface{}{
-			r.ResourceType: map[string]interface{}{
-				r.Name: map[string]interface{}{},
+	result := map[string]any{
+		"resource": map[string]any{
+			r.ResourceType: map[string]any{
+				r.Name: map[string]any{},
 			},
 		},
 	}
 
 	// Add resource options if defined
 	if r.HasOptions() {
-		result["resource"].(map[string]interface{})[r.ResourceType].(map[string]interface{})[r.Name] = json.RawMessage(r.Options)
+		result["resource"].(map[string]any)[r.ResourceType].(map[string]any)[r.Name] = json.RawMessage(r.Options)
 	}
 
 	// Marshal result to JSON
@@ -66,7 +65,7 @@ func (r *Resource) GetResourceConfig() (string, error) {
 }
 
 // WriteToFile writes the Terraform resource configuration to a file.
-// workdir is the terraform working directory for the resource that will be managed
+// workdir is the terraform working directory for the resource that will be managed.
 func (r *Resource) WriteToFile(workdir string) error {
 	filename := filepath.Join(workdir, "resource.tf.json")
 
@@ -82,7 +81,7 @@ func (r *Resource) WriteToFile(workdir string) error {
 		return fmt.Errorf("cant write resource file: %w", err)
 	}
 
-	_, err = f.Write([]byte(conf))
+	_, err = f.WriteString(conf)
 	if err != nil {
 		return fmt.Errorf("cant write resource file: %w", err)
 	}

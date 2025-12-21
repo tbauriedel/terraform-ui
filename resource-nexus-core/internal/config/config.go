@@ -7,43 +7,46 @@ import (
 	"time"
 )
 
+// Config represents the configuration of resource-nexus-core.
 type Config struct {
 	Logging  Logger   `json:"logging"`
 	Database Database `json:"database"`
 	Listener Listener `json:"listener"`
 }
 
+// Listener represents the listener configuration.
 type Listener struct {
-	ListenAddr    string        `json:"listen_addr"`
-	ReadTimeout   time.Duration `json:"read_timeout"`
-	IdleTimeout   time.Duration `json:"idle_timeout"`
-	TlsEnabled    bool          `json:"tls_enabled"`
-	TlsSkipVerify bool          `json:"tls_skip_verify"`
-	TlsCertPath   string        `json:"tls_cert_file"`
-	TlsKeyPath    string        `json:"tls_key_file"`
+	ListenAddr    string        `json:"listenAddr"`
+	ReadTimeout   time.Duration `json:"readTimeout"`
+	IdleTimeout   time.Duration `json:"idleTimeout"`
+	TLSEnabled    bool          `json:"tlsEnabled"`
+	TLSSkipVerify bool          `json:"tlsSkipVerify"`
+	TLSCertPath   string        `json:"tlsCertFile"`
+	TLSKeyPath    string        `json:"tlsKeyFile"`
 }
 
+// Logger represents the logging configuration.
 type Logger struct {
 	Type  string `json:"type"`
 	File  string `json:"file"`
 	Level string `json:"level"`
 }
 
-// conn_str=postgres://user:pass@localhost:5432/dbname?sslmode=disable
+// Database represents the database configuration.
 type Database struct {
 	Address       string `json:"address"`
 	Port          int    `json:"port"`
 	User          string `json:"user"`
 	Password      string `json:"password"`
 	Name          string `json:"name"`
-	TlsSkipVerify bool   `json:"tls_skip_verify"`
+	TLSSkipVerify bool   `json:"tlsSkipVerify"`
 }
 
 var (
-	RedactionPlaceholder = "********"
+	redactionPlaceholder = "********" //nolint:gochecknoglobals
 )
 
-// LoadDefaults returns a Config struct with default values
+// LoadDefaults returns a Config struct with default values.
 func LoadDefaults() Config {
 	return Config{
 		Logging: Logger{
@@ -56,14 +59,16 @@ func LoadDefaults() Config {
 			ListenAddr:    ":4890",
 			ReadTimeout:   10 * time.Second,
 			IdleTimeout:   120 * time.Second,
-			TlsSkipVerify: false,
+			TLSSkipVerify: false,
 		},
 	}
 }
 
-// LoadFromJSONFile reads the config file and return a Config struct
+// LoadFromJSONFile reads the config file and return a Config struct.
+//
+// The function will try to read the provided file. Be sure, the file is not sensitive.
 func LoadFromJSONFile(file string) (Config, error) {
-	data, err := os.ReadFile(file)
+	data, err := os.ReadFile(file) // #nosec G304 file path is provided by a trusted CLI flag
 	if err != nil {
 		return Config{}, fmt.Errorf("failed to read config file. %w", err)
 	}
@@ -78,7 +83,7 @@ func LoadFromJSONFile(file string) (Config, error) {
 	return c, nil
 }
 
-// GetConfigRedacted returns a new Config object, with sensitive testdata masked with RedactionPlaceholder
+// GetConfigRedacted returns a new Config object, with sensitive testdata masked with redactionPlaceholder
 //
 // Sensitive testdata includes:
 //   - Database.User
@@ -87,11 +92,11 @@ func (c Config) GetConfigRedacted() Config {
 	sanitized := c
 
 	if c.Database.User != "" {
-		sanitized.Database.User = RedactionPlaceholder
+		sanitized.Database.User = redactionPlaceholder
 	}
 
 	if c.Database.Password != "" {
-		sanitized.Database.Password = RedactionPlaceholder
+		sanitized.Database.Password = redactionPlaceholder
 	}
 
 	return sanitized

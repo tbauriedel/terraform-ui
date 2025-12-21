@@ -25,7 +25,7 @@ func TestGetConfigRedacted(t *testing.T) {
 
 	sanitized := c.GetConfigRedacted()
 
-	if sanitized.Database.Password != RedactionPlaceholder || sanitized.Database.User != RedactionPlaceholder {
+	if sanitized.Database.Password != redactionPlaceholder || sanitized.Database.User != redactionPlaceholder {
 		t.Fatal("password and user should be redacted")
 	}
 }

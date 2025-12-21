@@ -26,13 +26,13 @@ func TestTestTcp(t *testing.T) {
 	addr := l.Addr().String()
 
 	// test successful connection
-	ok, err := testTcp(addr, 1*time.Second)
+	ok, err := testTCP(addr, 1*time.Second)
 	if ok != true || err != nil {
 		t.Fatal(err)
 	}
 
 	// test failed connection
-	ok, err = testTcp("localhost:4891", 1*time.Second)
+	ok, err = testTCP("localhost:4891", 1*time.Second)
 	if ok != false || err == nil {
 		t.Fatal(err)
 	}
@@ -73,7 +73,7 @@ func TestTestTcpTls(t *testing.T) {
 	addr := l.Addr().String()
 
 	// test successful tcp connection
-	ok, err := testTcpTls(addr, 3*time.Second)
+	ok, err := testTCPWithTLS(addr, true, 3*time.Second)
 	if !ok || err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +82,7 @@ func TestTestTcpTls(t *testing.T) {
 	port := tcpAddr.Port
 
 	// test failed tcp connection
-	ok, err = testTcpTls(fmt.Sprintf("localhost:%s", string(rune(port+1))), 3*time.Second)
+	ok, err = testTCPWithTLS(fmt.Sprintf("localhost:%s", string(rune(port+1))), true, 3*time.Second)
 	if ok || err == nil {
 		t.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestWaitForConnection(t *testing.T) {
 
 	addr := l.Addr().String()
 
-	err = WaitForConnection(addr, 1*time.Second)
+	err = WaitForConnection(addr, true, 1*time.Second)
 	if err != nil {
 		t.Fatal(err)
 	}

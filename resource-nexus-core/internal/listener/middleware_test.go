@@ -2,13 +2,24 @@ package listener
 
 import (
 	"testing"
+	"time"
 
 	"github.com/tbauriedel/resource-nexus-core/internal/config"
+	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
 func TestWithMiddleWare(t *testing.T) {
-	l := NewListener(config.Listener{}, nil, nil,
-		WithMiddleWare(MiddlewareLogging(nil)),
+	log := logging.NewLoggerStdout(config.Logger{Type: "stdout", Level: "debug"})
+
+	l := NewListener(
+		config.Listener{
+			ListenAddr:  "localhost:0",
+			ReadTimeout: 30 * time.Second,
+			IdleTimeout: 120 * time.Second,
+			TLSEnabled:  false,
+		},
+		nil,
+		WithMiddleWare(MiddlewareLogging(log)),
 	)
 
 	if l.middlewares == nil {

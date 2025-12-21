@@ -5,9 +5,9 @@
   },
   "database": {},
   "listener": {
-    "tls_enabled": true,
-    "tls_cert_file": "test/testdata/config/dummy-cert.pem",
-    "tls_key_file": "test/testdata/config/dummy-key.pem",
-    "tls_skip_verify": true
+    "tlsEnabled": true,
+    "tlsCertFile": "test/testdata/config/dummy-cert.pem",
+    "tlsKeyFile": "test/testdata/config/dummy-key.pem",
+    "tlsSkipVerify": true
   }
 }
