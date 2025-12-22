@@ -1,13 +1,12 @@
 # resource-nexus-core
 
-`**`resource-nexus-core` is the backbone of the whole stack.  
+`resource-nexus-core` is the backbone of the whole stack.  
 Triggered via REST API, `resource-nexus-core` executes terraform commands to provision infrastructure.
 
 # How it works
 
-`resource-nexus-core` simply works as a "wrapper" for [terraform](https://github.com/hashicorp/terraform). Using [terraform-exec](https://github.com/hashicorp/terraform-exec) as a library, `resource-nexus-core` builds necessary configuration files and applies them.  
+`resource-nexus-core` simply works as a "wrapper" for [terraform](https://github.com/hashicorp/terraform). Using the terraform CLI, `resource-nexus-core` builds necessary configuration files and applies them.  
 The main magic and logic comes from terraform itself. `resource-nexus-core` takes your configuration as JSON, stores them in a database and builds terraform files to execute.
-
 
 # Documentation
 
