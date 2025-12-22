@@ -18,15 +18,17 @@ type Config struct {
 
 // Listener represents the listener configuration.
 type Listener struct {
-	ListenAddr          string        `json:"listenAddr"`
-	ReadTimeout         time.Duration `json:"readTimeout"`
-	IdleTimeout         time.Duration `json:"idleTimeout"`
-	TLSEnabled          bool          `json:"tlsEnabled"`
-	TLSSkipVerify       bool          `json:"tlsSkipVerify"`
-	TLSCertPath         string        `json:"tlsCertFile"`
-	TLSKeyPath          string        `json:"tlsKeyFile"`
-	RateLimitGeneration rate.Limit    `json:"rateLimitGeneration"`
-	RateLimitBucketSize int           `json:"rateLimitBucketSize"`
+	ListenAddr                 string        `json:"listenAddr"`
+	ReadTimeout                time.Duration `json:"readTimeout"`
+	IdleTimeout                time.Duration `json:"idleTimeout"`
+	TLSEnabled                 bool          `json:"tlsEnabled"`
+	TLSSkipVerify              bool          `json:"tlsSkipVerify"`
+	TLSCertPath                string        `json:"tlsCertFile"`
+	TLSKeyPath                 string        `json:"tlsKeyFile"`
+	GlobalRateLimitGeneration  rate.Limit    `json:"globalRateLimitGeneration"`
+	GlobalRateLimitBucketSize  int           `json:"globalRateLimitBucketSize"`
+	IpBasedRateLimitGeneration rate.Limit    `json:"ipBasedRateLimitGeneration"`
+	IpBasedRateLimitBucketSize int           `json:"ipBasedRateLimitBucketSize"`
 }
 
 // Logger represents the logging configuration.
@@ -60,12 +62,14 @@ func LoadDefaults() Config {
 		},
 		Database: Database{},
 		Listener: Listener{
-			ListenAddr:          ":4890",
-			ReadTimeout:         10 * time.Second,
-			IdleTimeout:         120 * time.Second,
-			TLSSkipVerify:       false,
-			RateLimitGeneration: 5,
-			RateLimitBucketSize: 25,
+			ListenAddr:                 ":4890",
+			ReadTimeout:                10 * time.Second,
+			IdleTimeout:                120 * time.Second,
+			TLSSkipVerify:              false,
+			GlobalRateLimitGeneration:  5,
+			GlobalRateLimitBucketSize:  25,
+			IpBasedRateLimitGeneration: 2,
+			IpBasedRateLimitBucketSize: 10,
 		},
 	}
 }

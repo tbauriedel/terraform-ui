@@ -18,7 +18,7 @@ import (
 	"github.com/tbauriedel/resource-nexus-core/internal/utils/netutils"
 )
 
-func main() {
+func main() { //nolint:funlen
 	var (
 		err        error
 		conf       config.Config
@@ -105,9 +105,15 @@ func main() {
 		logger,
 		listener.WithMiddleWare(listener.MiddlewareLogging(logger)),
 		listener.WithMiddleWare(listener.MiddlewareGlobalRateLimiter(
-			conf.Listener.RateLimitGeneration,
-			conf.Listener.RateLimitBucketSize),
-		),
+			conf.Listener.GlobalRateLimitGeneration,
+			conf.Listener.GlobalRateLimitBucketSize,
+			logger,
+		)),
+		listener.WithMiddleWare(listener.MiddleWareIpRateLimiter(
+			conf.Listener.IpBasedRateLimitGeneration,
+			conf.Listener.IpBasedRateLimitBucketSize,
+			logger,
+		)),
 	)
 
 	// Start listener in the background
