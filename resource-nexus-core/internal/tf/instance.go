@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/tbauriedel/resource-nexus-core/internal/utils/fileutils"
+	"github.com/tbauriedel/resource-nexus-core/internal/common/fileutils"
 )
 
 // TerraformInstance represents a terraform instance.

@@ -116,3 +116,34 @@ Examples:
 "readTimeout": "10s"
 "idleTimeout": "2m"
 ```
+
+## Security
+
+Inside the `security` section, the following settings can be configured.
+
+```json
+{
+  "security": {
+    "passwordHashing": {
+      "iterations": 3,
+      "memoryCost": 65536,
+      "threadsCount": 1,
+      "keyLength": 32,
+      "saltLength": 16
+    }
+  }
+}
+```
+
+`passwordHashing`: Configurations for the password hashing algorithm. When creating new passwords, these settings are
+used. To verify existing passwords, the settings from the stored encoded hash are used.
+
+**Reference**:
+
+| Field                          | Type   | Required | Default | Description                                       |
+|--------------------------------|--------|----------|---------|---------------------------------------------------|
+| `passwordHashing.iterations`   | uint32 | No       | `3`     | Number of iterations that are done while hashing. |
+| `passwordHashing.memoryCost`   | uint32 | No       | `65536` | Memory that is used for the hash calculation.     |
+| `passwordHashing.threadsCount` | uint8  | No       | `1`     | Number of threads used for the hash calculation.  |
+| `passwordHashing.keyLength`    | uint32 | No       | `32`    | Length of the generated key in bytes.             |
+| `passwordHashing.saltLength`   | uint32 | No       | `16`    | Length of the generated salt in bytes.            |

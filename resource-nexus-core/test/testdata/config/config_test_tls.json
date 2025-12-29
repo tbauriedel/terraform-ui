@@ -16,5 +16,14 @@
     "tlsCertFile": "test/testdata/config/dummy-cert.pem",
     "tlsKeyFile": "test/testdata/config/dummy-key.pem",
     "tlsSkipVerify": true
+  },
+  "security": {
+    "passwordHashing": {
+      "iterations": 3,
+      "memoryCost": 65536,
+      "threadsCount": 1,
+      "keyLength": 32,
+      "saltLength": 16
+    }
   }
 }

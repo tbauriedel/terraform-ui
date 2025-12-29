@@ -12,5 +12,14 @@
     "name": "resource-nexus",
     "tlsMode": "disable"
   },
-  "listener": {}
+  "listener": {},
+  "security": {
+    "passwordHashing": {
+      "iterations": 3,
+      "memoryCost": 65536,
+      "threadsCount": 1,
+      "keyLength": 32,
+      "saltLength": 16
+    }
+  }
 }

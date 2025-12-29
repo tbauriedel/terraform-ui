@@ -5,6 +5,7 @@ resource-nexus-core/.idea
 resource-nexus-core/NOTES.md
 resource-nexus-core/test/data/test.log
 resource-nexus-core/test/data/test.txt
-resource-nexus-core/resource-nexus
+resource-nexus-core/resource-nexus-core
 resource-nexus-core/test/testdata/tmp*
 resource-nexus-core/TODO.md
+dev-resource-nexus/.pg-volume

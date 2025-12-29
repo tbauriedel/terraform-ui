@@ -35,9 +35,7 @@ func NewListener(cfg config.Listener, logger *logging.Logger, opts ...Option) *L
 		opt(l)
 	}
 
-	if l.multiplexer == nil {
-		l.multiplexer = http.NewServeMux()
-	}
+	l.multiplexer = http.NewServeMux()
 
 	// apply middlewares to mux
 	l.applyMiddlewares()
@@ -106,7 +104,7 @@ func (l *Listener) Start() error {
 
 // Shutdown shuts down the listener gracefully.
 func (l *Listener) Shutdown(ctx context.Context) error {
-	l.logger.Debug("shutdown for listener requested")
+	l.logger.Debug("stop listener")
 
 	err := l.server.Shutdown(ctx)
 	if err != nil {

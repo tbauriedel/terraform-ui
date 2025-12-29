@@ -45,6 +45,15 @@ func LoadDefaults() Config {
 			IpBasedRateLimitGeneration: 2,
 			IpBasedRateLimitBucketSize: 10,
 		},
+		Security: Security{
+			PasswordHashing: HashingParams{
+				Iterations:   3,
+				MemoryCost:   64 * 1024, // 64MB
+				ThreadsCount: 1,
+				KeyLength:    32,
+				SaltLength:   16,
+			},
+		},
 	}
 }
 

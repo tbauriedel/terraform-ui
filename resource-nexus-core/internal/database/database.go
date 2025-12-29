@@ -7,8 +7,8 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-
 	"github.com/tbauriedel/resource-nexus-core/internal/config"
+	database "github.com/tbauriedel/resource-nexus-core/internal/database/models"
 	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
@@ -18,6 +18,10 @@ import (
 type Database interface {
 	TestConnection() error
 	Close() error
+	GetUsers(filter FilterExpr, ctx context.Context) ([]database.User, error)
+	GetUser(filter FilterExpr, ctx context.Context) (database.User, error)
+	GetUserPermissions(username string, ctx context.Context) ([]database.Permission, error)
+	InsertUser(ctx context.Context, user database.User) (sql.Result, error)
 }
 
 type SqlDatabase struct {
@@ -43,6 +47,17 @@ func NewDatabase(conf config.Database, logger *logging.Logger) (*SqlDatabase, er
 		database: db,
 		logger:   logger,
 	}, nil
+}
+
+// NewSqlDatabase returns a SqlDatabase instance with the given sql.DB connection.
+//
+// Dont use for prod instances. Use NewDatabase instead.
+// This is only intended for testing purposes.
+func NewSqlDatabase(db *sql.DB, l *logging.Logger) *SqlDatabase {
+	return &SqlDatabase{
+		database: db,
+		logger:   l,
+	}
 }
 
 // TestConnection tests the database connection by pinging the database.
