@@ -6,6 +6,7 @@ import (
 
 	"github.com/tbauriedel/resource-nexus-core/internal/database"
 	"github.com/tbauriedel/resource-nexus-core/internal/listener/routes"
+	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
 // AddRoute adds a new route to the listener.
@@ -25,9 +26,10 @@ func (l *Listener) AddRoute(method, url string, handler http.HandlerFunc) {
 // AddRoutesToListener adds all routes to the listener.
 //
 // Routes are defined in the 'routes' package.
-func (l *Listener) AddRoutesToListener(db database.Database) {
+func (l *Listener) AddRoutesToListener(db database.Database, logger *logging.Logger) {
 	r := routes.Routes{
-		DB: db,
+		DB:     db,
+		Logger: logger,
 	}
 
 	for _, route := range r.Get() {

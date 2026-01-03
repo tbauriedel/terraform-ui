@@ -28,9 +28,10 @@ A user can be part of multiple groups. All permissions granted by the groups are
 
 Permissions are structured like this: `category:resource:action`. For example: `security:user:get`
 
-Available permissions are:
+Information about when which authorization is required can be found in the [API Resources docs](./21-API-Resources.md).  
+> Some permissions can grant access to multiple resources! So watch out and check the docs before granting permissions!
 
-- `system:health:get`: Get general health status of resource-nexus-core
+#### Admin Users
 
 Admin users are flagged inside the database and have **all permissions**. Here, the permission is set on the user itself
 and no group is used.

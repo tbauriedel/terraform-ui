@@ -8,7 +8,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/tbauriedel/resource-nexus-core/internal/config"
-	database "github.com/tbauriedel/resource-nexus-core/internal/database/models"
 	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
@@ -76,7 +75,7 @@ func TestInsertUser(t *testing.T) {
 	d, mock, _ := sqlmock.New()
 	defer d.Close()
 
-	user := database.User{
+	user := User{
 		Name:         "dummy",
 		PasswordHash: "foobar",
 		IsAdmin:      false,
@@ -140,7 +139,7 @@ func TestGetUserPermissions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !reflect.DeepEqual(p, []database.Permission{
+	if !reflect.DeepEqual(p, []Permission{
 		{Category: "security", Resource: "user", Action: "get"},
 		{Category: "security", Resource: "user", Action: "create"}}) {
 		t.Fatal("wrong permissions returned")

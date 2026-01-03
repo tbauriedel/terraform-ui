@@ -15,6 +15,7 @@ linters:
     - revive
     - embeddedstructfieldcheck
     - wsl
+    - tagliatelle
   settings:
     funlen:
       lines: 120

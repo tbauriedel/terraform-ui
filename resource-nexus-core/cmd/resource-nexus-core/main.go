@@ -93,7 +93,7 @@ func main() { //nolint:funlen,nolintlint,cyclop
 		logger.Info("shut down resource-nexus-core")
 	}()
 
-	//----- Database -----//
+	//----- DatabaseStatus -----//
 
 	logger.Info("initializing database connection")
 
@@ -148,7 +148,7 @@ func main() { //nolint:funlen,nolintlint,cyclop
 	)
 
 	// Add routes to the listener
-	l.AddRoutesToListener(db)
+	l.AddRoutesToListener(db, logger)
 
 	// Start listener in the background
 	go func() {

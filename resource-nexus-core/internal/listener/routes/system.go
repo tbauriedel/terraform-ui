@@ -8,26 +8,34 @@ import (
 )
 
 type SystemHealth struct {
-	Database bool   `json:"databaseConnection"`
-	Version  string `json:"version"`
+	DatabaseStatus        bool   `json:"databaseStatus"`
+	DatabaseStatusMessage string `json:"databaseStatusMessage"`
+	Version               string `json:"version"`
 }
 
 func (routes *Routes) Health(w http.ResponseWriter, r *http.Request) {
 	health := SystemHealth{
-		Database: false,
-		Version:  version.GetVersion(),
+		DatabaseStatus: false,
+		Version:        version.GetVersion(),
 	}
 
 	// test database connection
 	err := routes.DB.TestConnection()
-	if err == nil {
-		health.Database = true
+
+	health.DatabaseStatus = err == nil
+	health.DatabaseStatusMessage = "OK"
+
+	if err != nil {
+		health.DatabaseStatusMessage = err.Error()
 	}
 
 	// Build json response
 	j, err := json.Marshal(health)
 	if err != nil {
-		panic(err)
+		routes.Logger.Error("failed to marshal health response", "error", err)
+		http.Error(w, BuildResponseMessage(http.StatusText(http.StatusInternalServerError)), http.StatusInternalServerError)
+
+		return
 	}
 
 	// Set json header and http code
@@ -37,6 +45,9 @@ func (routes *Routes) Health(w http.ResponseWriter, r *http.Request) {
 	// print json response
 	_, err = w.Write(j)
 	if err != nil {
-		panic(err)
+		routes.Logger.Error("failed to write health response", "error", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+
+		return
 	}
 }

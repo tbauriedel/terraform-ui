@@ -4,49 +4,29 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
-	database "github.com/tbauriedel/resource-nexus-core/internal/database/models"
 )
 
 const (
-	TableNameUsers            = "users"
-	TableNameGroups           = "groups"
-	TableNamePermissions      = "permissions"
-	TableNameGroupPermissions = "group_permissions"
-	TableNameUserGroups       = "user_groups"
+	TableNameUsers            string = "users"
+	TableNamePermissions      string = "permissions"
+	TableNameGroupPermissions string = "group_permissions"
 )
 
 // GetUsers returns all users from the database found by the given filter.
-func (db *SqlDatabase) GetUsers(filter FilterExpr, ctx context.Context) ([]database.User, error) {
+func (db *SqlDatabase) GetUsers(filter FilterExpr, ctx context.Context) ([]User, error) {
 	query := fmt.Sprintf("SELECT id, name, password_hash, is_admin FROM %s", TableNameUsers)
 
-	// build where clause. is empty if no filter is given
-	where, args, err := BuildWhere(filter)
+	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
 	if err != nil {
 		return nil, err
 	}
 
-	// append where clause to query
-	query += where
+	defer closeRows()
 
-	db.logger.Debug("query users from database", "query", query, "args", args)
-
-	rows, err := db.database.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query users. query: %s: %w", query, err)
-	}
-
-	defer func() {
-		err = rows.Close()
-		if err != nil {
-			db.logger.Error("failed to close rows", "error", err)
-		}
-	}()
-
-	var users []database.User
+	var users []User
 
 	for rows.Next() {
-		var user database.User
+		var user User
 
 		err = rows.Scan(&user.ID, &user.Name, &user.PasswordHash, &user.IsAdmin)
 		if err != nil {
@@ -65,25 +45,25 @@ func (db *SqlDatabase) GetUsers(filter FilterExpr, ctx context.Context) ([]datab
 }
 
 // GetUser returns a single user from the database.
-func (db *SqlDatabase) GetUser(filter FilterExpr, ctx context.Context) (database.User, error) {
+func (db *SqlDatabase) GetUser(filter FilterExpr, ctx context.Context) (User, error) {
 	users, err := db.GetUsers(filter, ctx)
 	if err != nil {
-		return database.User{}, err
+		return User{}, err
 	}
 
 	if len(users) > 1 {
-		return database.User{}, fmt.Errorf("found more than one user with filter %s", filter)
+		return User{}, fmt.Errorf("found more than one user with filter %s", filter)
 	}
 
 	if len(users) == 0 {
-		return database.User{}, fmt.Errorf("no user found with filter %s", filter)
+		return User{}, fmt.Errorf("no user found with filter %s", filter)
 	}
 
 	return users[0], nil
 }
 
 // InsertUser inserts a new user into the database.
-func (db *SqlDatabase) InsertUser(ctx context.Context, user database.User) (sql.Result, error) {
+func (db *SqlDatabase) InsertUser(ctx context.Context, user User) (sql.Result, error) {
 	query := fmt.Sprintf("INSERT INTO %s (name, password_hash, is_admin) VALUES ($1, $2, $3)", TableNameUsers)
 
 	result, err := db.database.ExecContext(ctx, query, user.Name, user.PasswordHash, user.IsAdmin)
@@ -98,7 +78,7 @@ func (db *SqlDatabase) InsertUser(ctx context.Context, user database.User) (sql.
 // Permissions are joined from the user groups and the group permissions.
 //
 // The permissions are returned as a slice of database.Permission.
-func (db *SqlDatabase) GetUserPermissions(username string, ctx context.Context) ([]database.Permission, error) {
+func (db *SqlDatabase) GetUserPermissions(username string, ctx context.Context) ([]Permission, error) {
 	// SQL statement to query all permissions for a user
 	query := fmt.Sprintf(`
 		SELECT DISTINCT 
@@ -144,10 +124,10 @@ func (db *SqlDatabase) GetUserPermissions(username string, ctx context.Context) 
 		}
 	}()
 
-	var permissions []database.Permission
+	var permissions []Permission
 
 	for rows.Next() {
-		var permission database.Permission
+		var permission Permission
 
 		err = rows.Scan(&permission.Category, &permission.Resource, &permission.Action)
 		if err != nil {

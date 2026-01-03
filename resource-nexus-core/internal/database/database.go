@@ -8,7 +8,6 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/tbauriedel/resource-nexus-core/internal/config"
-	database "github.com/tbauriedel/resource-nexus-core/internal/database/models"
 	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
 
@@ -18,10 +17,13 @@ import (
 type Database interface {
 	TestConnection() error
 	Close() error
-	GetUsers(filter FilterExpr, ctx context.Context) ([]database.User, error)
-	GetUser(filter FilterExpr, ctx context.Context) (database.User, error)
-	GetUserPermissions(username string, ctx context.Context) ([]database.Permission, error)
-	InsertUser(ctx context.Context, user database.User) (sql.Result, error)
+	GetUsers(filter FilterExpr, ctx context.Context) ([]User, error)
+	GetUser(filter FilterExpr, ctx context.Context) (User, error)
+	GetUserPermissions(username string, ctx context.Context) ([]Permission, error)
+	InsertUser(ctx context.Context, user User) (sql.Result, error)
+	GetGroups(filter FilterExpr, ctx context.Context) ([]Group, error)
+	GetGroup(filter FilterExpr, ctx context.Context) (Group, error)
+	InsertGroup(ctx context.Context, group Group) (sql.Result, error)
 }
 
 type SqlDatabase struct {
