@@ -40,6 +40,7 @@ func LoadUser(username string, db database.Database, ctx context.Context) (*User
 		Name:            res.Name,
 		PasswordHash:    res.PasswordHash,
 		IsAuthenticated: false,
+		IsAdmin:         res.IsAdmin,
 	}
 
 	// Load Permissions from database
@@ -49,7 +50,7 @@ func LoadUser(username string, db database.Database, ctx context.Context) (*User
 	}
 
 	for _, perm := range perms {
-		user.Permissions = append(user.Permissions, BuildPermissionString(perm.Category, perm.Action, perm.Resource))
+		user.Permissions = append(user.Permissions, BuildPermissionString(perm.Category, perm.Resource, perm.Action))
 	}
 
 	return user, nil

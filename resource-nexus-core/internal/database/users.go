@@ -130,6 +130,8 @@ func (db *SqlDatabase) GetUserPermissions(username string, ctx context.Context) 
 	// append where clause to query
 	query += where
 
+	db.logger.Debug("query user permissions from database", "query", query, "args", args)
+
 	rows, err := db.database.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query user permissions. query: %s: %w", query, err)

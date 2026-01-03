@@ -1,12 +1,15 @@
 package authentication
 
+// permissions return the permissions map.
+func permissions() map[string]string {
+	return map[string]string{
+		"/system/health": "system:health:get",
+	}
+}
+
 // GetPermissionForPath returns the permission for the given path / url.
 func GetPermissionForPath(url string) (string, bool) {
-	var permissionsMap = map[string]string{
-		"": "",
-	}
-
-	perm, ok := permissionsMap[url]
+	perm, ok := permissions()[url]
 	if !ok {
 		return "", false
 	}
@@ -17,6 +20,6 @@ func GetPermissionForPath(url string) (string, bool) {
 // BuildPermissionString builds a permission string from category, action and resource.
 //
 // Format: category:action:resource.
-func BuildPermissionString(category, action, resource string) string {
-	return category + ":" + action + ":" + resource
+func BuildPermissionString(category, resource, action string) string {
+	return category + ":" + resource + ":" + action
 }

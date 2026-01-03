@@ -30,8 +30,7 @@ Permissions are structured like this: `category:resource:action`. For example: `
 
 Available permissions are:
 
-- ...
-- ...
+- `system:health:get`: Get general health status of resource-nexus-core
 
 Admin users are flagged inside the database and have **all permissions**. Here, the permission is set on the user itself
 and no group is used.

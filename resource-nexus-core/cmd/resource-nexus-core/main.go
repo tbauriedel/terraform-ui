@@ -147,7 +147,8 @@ func main() { //nolint:funlen,nolintlint,cyclop
 		listener.WithMiddleWare(listener.MiddlewareAuthentication(db, logger)), // validate user
 	)
 
-	// Add listener routes here. Using l.AddRoute()
+	// Add routes to the listener
+	l.AddRoutesToListener(db)
 
 	// Start listener in the background
 	go func() {

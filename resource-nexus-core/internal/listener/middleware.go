@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"slices"
 	"sync"
 
 	"github.com/tbauriedel/resource-nexus-core/internal/authentication"
@@ -113,7 +112,7 @@ func MiddlewareAuthentication(db database.Database, logger *logging.Logger) Midd
 				return
 			}
 
-			logger.Info(fmt.Sprintf("authentication for user '%s' successful", username))
+			logger.Debug(fmt.Sprintf("authentication for user '%s' successful", username))
 
 			// store the user inside the request context
 			ctx := context.WithValue(r.Context(), storedUserKey, storedUser)
@@ -147,13 +146,15 @@ func MiddlewareAuthorization(logger *logging.Logger) Middleware {
 			}
 
 			// check if the authenticated user has the needed permission. admins are power users!
-			// Validates if tge loaded permission from the PermissionMap is contained in the stored user permissions.
-			if !slices.Contains(storedUser.Permissions, perm) && !storedUser.IsAdmin {
+			// Validates if the loaded permission from the PermissionMap is contained in the stored user permissions.
+			if !storedUser.HasPermission(perm) {
 				logger.Warn(fmt.Sprintf("authorization failed: permission '%s' not allowed", perm))
 				http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 
 				return
 			}
+
+			logger.Debug(fmt.Sprintf("authorization successful for user '%s' on path '%s'", storedUser.Name, r.URL.Path))
 
 			next.ServeHTTP(w, r)
 		})

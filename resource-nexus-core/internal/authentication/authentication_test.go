@@ -58,7 +58,7 @@ func TestLoadUser(t *testing.T) {
 		ID:           1,
 		Name:         "dummy",
 		PasswordHash: "foobar",
-		Permissions:  []string{"security:get:user", "security:create:user"},
+		Permissions:  []string{"security:user:get", "security:user:create"},
 		IsAdmin:      false,
 	}
 
