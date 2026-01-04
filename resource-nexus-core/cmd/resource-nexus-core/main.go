@@ -10,10 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tbauriedel/resource-nexus-core/internal/common/fileutils"
+	"github.com/tbauriedel/resource-nexus-core/internal/app"
 	"github.com/tbauriedel/resource-nexus-core/internal/common/netutils"
-	"github.com/tbauriedel/resource-nexus-core/internal/config"
-	"github.com/tbauriedel/resource-nexus-core/internal/database"
 	"github.com/tbauriedel/resource-nexus-core/internal/listener"
 	"github.com/tbauriedel/resource-nexus-core/internal/logging"
 )
@@ -21,7 +19,6 @@ import (
 func main() { //nolint:funlen,nolintlint,cyclop
 	var (
 		err        error
-		conf       config.Config
 		configPath string
 		logger     *logging.Logger
 	)
@@ -37,73 +34,24 @@ func main() { //nolint:funlen,nolintlint,cyclop
 
 	// Add and parse flags
 	flag.StringVar(&configPath, "config", "config.json", "Config file")
-
 	flag.Parse()
-
-	// Load server config
-	if !fileutils.FileExists(configPath) {
-		slog.Info("no config file found or provided. loading default configuration")
-
-		conf = config.LoadDefaults()
-	} else {
-		slog.Info("loading config from file", "file", configPath)
-
-		var err error
-
-		conf, err = config.LoadFromJSONFile(configPath)
-		if err != nil {
-			slog.Error(err.Error())
-			exit(nil, 1)
-		}
-	}
-
-	slog.Info("configuration loaded")
-
-	var f *os.File
-
-	// init logger
-	if conf.Logging.Type == "file" {
-		slog.Debug("creating logger for type 'file'")
-
-		// open logfile
-		f, err = fileutils.OpenFile(conf.Logging.File)
-		if err != nil {
-			slog.Error(err.Error())
-			exit(f, 1)
-		}
-
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(f)
-
-		// create logger for type 'file'
-		logger = logging.NewLoggerFile(conf.Logging, f)
-	} else {
-		slog.Debug("creating logger for type 'stdout'")
-
-		// create logger for type 'stdout'
-		logger = logging.NewLoggerStdout(conf.Logging)
-	}
-
-	// Print redacted config
-	logger.Debug("starting with configuration", "config", conf.GetConfigRedacted())
 
 	// print shut down the message after all defer statements have been executed.
 	defer func() {
 		logger.Info("shut down resource-nexus-core")
 	}()
 
-	//----- DatabaseStatus -----//
-
-	logger.Info("initializing database connection")
-
-	var db database.Database
-
-	// create the database connection
-	db, err = database.NewDatabase(conf.Database, logger)
+	// Bootstrap application
+	conf, err := app.LoadConfig(configPath)
 	if err != nil {
-		logger.Error(err.Error())
-		exit(f, 1)
+		slog.Error(err.Error())
+		app.Exit(nil, 1)
+	}
+
+	db, logger, logfile, err := app.Bootstrap(conf)
+	if err != nil {
+		slog.Error(err.Error())
+		app.Exit(logfile, 1)
 	}
 
 	// close database connection on exit of main
@@ -113,15 +61,6 @@ func main() { //nolint:funlen,nolintlint,cyclop
 			logger.Error(err.Error())
 		}
 	}()
-
-	// test database connection
-	err = db.TestConnection()
-	if err != nil {
-		logger.Error(err.Error())
-		exit(f, 1)
-	}
-
-	logger.Info("database connection established and tested successfully")
 
 	//----- Listener -----//
 
@@ -155,7 +94,7 @@ func main() { //nolint:funlen,nolintlint,cyclop
 		err := l.Start()
 		if err != nil {
 			logger.Error(err.Error())
-			exit(f, 1)
+			app.Exit(logfile, 1)
 		}
 	}()
 
@@ -167,7 +106,7 @@ func main() { //nolint:funlen,nolintlint,cyclop
 	err = netutils.WaitForConnection(conf.Listener.ListenAddr, conf.Listener.TLSSkipVerify, 10*time.Second)
 	if err != nil {
 		logger.Error(fmt.Sprintf("waited 10 seconds for listener to start without success. shutting down. %s", err.Error()))
-		exit(f, 1)
+		app.Exit(logfile, 1)
 	}
 
 	// send messages that resource-nexus-core is ready to server requests
@@ -193,13 +132,4 @@ func main() { //nolint:funlen,nolintlint,cyclop
 	}
 
 	logger.Debug("listener stopped")
-}
-
-// exit closes the logfile and exits the application with the given code.
-func exit(logfile *os.File, code int) { //nolint:unparam
-	if logfile != nil {
-		_ = logfile.Close()
-	}
-
-	os.Exit(code)
 }
