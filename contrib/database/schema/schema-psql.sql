@@ -21,8 +21,9 @@ CREATE TABLE permissions (
 INSERT INTO permissions (id, category, resource, action)
 VALUES
     (1, 'system', 'health', 'get'),
-    (2, 'auth', 'user', 'create'),
-    (3, 'auth', 'group', 'create'); 
+    (2, 'auth', 'user', 'add'),
+    (3, 'auth', 'group', 'add'),
+    (4, 'auth', 'usergroup', 'add'); 
 
 CREATE TABLE user_groups (
     user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

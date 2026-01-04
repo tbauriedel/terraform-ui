@@ -16,12 +16,11 @@ func (db *SqlDatabase) GetGroups(filter FilterExpr, ctx context.Context) ([]Grou
 
 	// query database
 	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
+	defer closeRows()
+
 	if err != nil {
 		return nil, err
 	}
-
-	// close rows
-	defer closeRows()
 
 	var groups []Group
 
@@ -66,7 +65,7 @@ func (db *SqlDatabase) GetGroup(filter FilterExpr, ctx context.Context) (Group, 
 func (db *SqlDatabase) InsertGroup(ctx context.Context, group Group) (sql.Result, error) {
 	query := fmt.Sprintf("INSERT INTO %s (name) VALUES ($1)", TableNameGroups)
 
-	result, err := db.database.ExecContext(ctx, query, group.Name)
+	result, err := db.Insert(query, ctx, group.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert group: %w", err)
 	}

@@ -19,7 +19,7 @@ Example response:
 
 ### /auth/user/add
 
-Necessary permission: `auth:user:create`
+Necessary permission: `auth:user:add`
 
 `POST /auth/user/add -d '{"name":"hercules","password_hash":"argon2id-hash","is_admin":false}'`: Creates a new user.  
 
@@ -37,7 +37,7 @@ Example response:
 
 ### /auth/group/add
 
-Necessary permission: `auth:group:create`
+Necessary permission: `auth:group:add`
 
 `POST /auth/group/add -d '{"name":"default-users"}`: Creates a new group.
 
@@ -48,5 +48,22 @@ Example response:
 ```json
 {
   "message": "entity created successfully"
+}
+```
+
+### /auth/usergroup/add
+
+Necessary permission: `auth:usergroup:add`
+
+`POST /auth/usergroup/add -d '{"username":"hercules","group_name":"default-users"}`: Create a new user greoup reference. Adds the user to the group.
+
+Body:
+- `username`: ID of the user
+- `group_name`: ID of the group
+
+Example response:
+```json
+{
+  "message": "user group reference added"
 }
 ```

@@ -17,11 +17,11 @@ func (db *SqlDatabase) GetUsers(filter FilterExpr, ctx context.Context) ([]User,
 	query := fmt.Sprintf("SELECT id, name, password_hash, is_admin FROM %s", TableNameUsers)
 
 	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
+	defer closeRows()
+
 	if err != nil {
 		return nil, err
 	}
-
-	defer closeRows()
 
 	var users []User
 
@@ -66,7 +66,7 @@ func (db *SqlDatabase) GetUser(filter FilterExpr, ctx context.Context) (User, er
 func (db *SqlDatabase) InsertUser(ctx context.Context, user User) (sql.Result, error) {
 	query := fmt.Sprintf("INSERT INTO %s (name, password_hash, is_admin) VALUES ($1, $2, $3)", TableNameUsers)
 
-	result, err := db.database.ExecContext(ctx, query, user.Name, user.PasswordHash, user.IsAdmin)
+	result, err := db.Insert(query, ctx, user.Name, user.PasswordHash, user.IsAdmin)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert user: %w", err)
 	}

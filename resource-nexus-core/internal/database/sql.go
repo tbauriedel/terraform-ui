@@ -40,3 +40,9 @@ func (db *SqlDatabase) Select(query string, filter FilterExpr, ctx context.Conte
 		}
 	}, nil
 }
+
+func (db *SqlDatabase) Insert(query string, ctx context.Context, args ...any) (sql.Result, error) {
+	db.logger.Debug("exec database", "query", query, "args", args)
+
+	return db.database.ExecContext(ctx, query, args...) //nolint:wrapcheck
+}

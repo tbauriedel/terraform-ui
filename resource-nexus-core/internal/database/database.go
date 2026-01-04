@@ -14,7 +14,7 @@ import (
 // Database interface for database operations.
 // At the moment only PostgresSQL is supported.
 // If more databases will be supported, they can implement the interface as well.
-type Database interface {
+type Database interface { //nolint:interfacebloat
 	TestConnection() error
 	Close() error
 	GetUsers(filter FilterExpr, ctx context.Context) ([]User, error)
@@ -24,6 +24,9 @@ type Database interface {
 	GetGroups(filter FilterExpr, ctx context.Context) ([]Group, error)
 	GetGroup(filter FilterExpr, ctx context.Context) (Group, error)
 	InsertGroup(ctx context.Context, group Group) (sql.Result, error)
+	GetUserGroupReferences(filter FilterExpr, ctx context.Context) ([]UserGroupReference, error)
+	GetUserGroupReference(filter FilterExpr, ctx context.Context) (UserGroupReference, error)
+	InsertUserGroupReference(ctx context.Context, group UserGroupReference) (sql.Result, error)
 }
 
 type SqlDatabase struct {

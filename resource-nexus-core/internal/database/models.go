@@ -19,12 +19,14 @@ type Permission struct {
 	Action   string
 }
 
-type UserGroup struct {
-	UserID  int
-	GroupID int
+type UserGroupReference struct {
+	Username  string `json:"username"`
+	GroupName string `json:"group_name"`
+	UserID    int    `json:"user_id"`
+	GroupID   int    `json:"group_id"`
 }
 
-type GroupPermission struct {
-	GroupID      int
-	PermissionID int
+type GroupPermissionReference struct {
+	GroupID      int `json:"group_id"`
+	PermissionID int `json:"permission_id"`
 }
