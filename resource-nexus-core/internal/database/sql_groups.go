@@ -16,11 +16,11 @@ func (db *SqlDatabase) GetGroups(filter FilterExpr, ctx context.Context) ([]Grou
 
 	// query database
 	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
-	defer closeRows()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer closeRows()
 
 	var groups []Group
 

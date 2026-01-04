@@ -16,6 +16,8 @@ linters:
     - embeddedstructfieldcheck
     - wsl
     - tagliatelle
+    - ireturn
+    - dupl
   settings:
     funlen:
       lines: 120

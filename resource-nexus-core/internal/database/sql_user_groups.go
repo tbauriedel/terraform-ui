@@ -14,32 +14,21 @@ const (
 func (db *SqlDatabase) GetUserGroupReferences(filter FilterExpr, ctx context.Context) ([]UserGroupReference, error) {
 	query := fmt.Sprintf("SELECT user_id, group_id FROM %s", TableNameUserGroups)
 
-	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
-	defer closeRows()
+	return getReferences(db, query, filter, ctx,
+		func(rows *sql.Rows) (UserGroupReference, error) {
+			var ref UserGroupReference
 
-	if err != nil {
-		return nil, err
-	}
+			err := rows.Scan(&ref.UserID, &ref.GroupID)
+			if err != nil {
+				return UserGroupReference{}, fmt.Errorf(
+					"failed to scan group permission reference: %w",
+					err,
+				)
+			}
 
-	var usersGroupRefs []UserGroupReference
-
-	for rows.Next() {
-		var userGroupRef UserGroupReference
-
-		err = rows.Scan(&userGroupRef.UserID, &userGroupRef.GroupID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan row: %w", err)
-		}
-
-		usersGroupRefs = append(usersGroupRefs, userGroupRef)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, fmt.Errorf("failed to iterate over rows: %w", err)
-	}
-
-	return usersGroupRefs, nil
+			return ref, nil
+		},
+	)
 }
 
 // GetUserGroupReference returns a single user group reference that matches the given filter.
@@ -49,12 +38,9 @@ func (db *SqlDatabase) GetUserGroupReference(filter FilterExpr, ctx context.Cont
 		return UserGroupReference{}, err
 	}
 
-	if len(userGroupRefs) > 1 {
-		return UserGroupReference{}, fmt.Errorf("found more than one user group reference with filter %s", filter)
-	}
-
-	if len(userGroupRefs) == 0 {
-		return UserGroupReference{}, fmt.Errorf("no user group reference found with filter %s", filter)
+	if !isSingleElement[UserGroupReference](userGroupRefs) {
+		return UserGroupReference{},
+			fmt.Errorf("not exactly 1 user group reference has been found with the filter %s", filter)
 	}
 
 	return userGroupRefs[0], nil

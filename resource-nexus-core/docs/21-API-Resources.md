@@ -67,3 +67,20 @@ Example response:
   "message": "user group reference added"
 }
 ```
+
+### /auth/grouppermission/add
+
+Necessary permission: `auth:grouppermission:add`
+
+`POST /auth/grouppermission/add -d '{"group_name":"default-users","permission":"auth:user:add"}`: Adds a permission to a group.
+
+Body:
+- `group_name`: Name of the group
+- `permission`: Permission to add
+
+Example response:
+```json
+{
+  "message": "permission group reference added"
+}
+```

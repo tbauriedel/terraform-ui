@@ -3,10 +3,11 @@ package authentication
 // permissions return the permissions map.
 func permissions() map[string]string {
 	return map[string]string{
-		"/system/health":      "system:health:get",
-		"/auth/user/add":      "auth:user:add",
-		"/auth/group/add":     "auth:group:add",
-		"/auth/usergroup/add": "auth:usergroup:add",
+		"/system/health":            "system:health:get",
+		"/auth/user/add":            "auth:user:add",
+		"/auth/group/add":           "auth:group:add",
+		"/auth/usergroup/add":       "auth:usergroup:add",
+		"/auth/grouppermission/add": "auth:grouppermission:add",
 	}
 }
 

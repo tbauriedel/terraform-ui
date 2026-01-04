@@ -27,6 +27,8 @@ type UserGroupReference struct {
 }
 
 type GroupPermissionReference struct {
-	GroupID      int `json:"group_id"`
-	PermissionID int `json:"permission_id"`
+	GroupName    string `json:"group_name"`
+	Permission   string `json:"permission"`
+	GroupID      int    `json:"group_id"`
+	PermissionID int    `json:"permission_id"`
 }

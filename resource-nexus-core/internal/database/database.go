@@ -27,6 +27,11 @@ type Database interface { //nolint:interfacebloat
 	GetUserGroupReferences(filter FilterExpr, ctx context.Context) ([]UserGroupReference, error)
 	GetUserGroupReference(filter FilterExpr, ctx context.Context) (UserGroupReference, error)
 	InsertUserGroupReference(ctx context.Context, group UserGroupReference) (sql.Result, error)
+	GetPermissions(filter FilterExpr, ctx context.Context) ([]Permission, error)
+	GetPermission(filter FilterExpr, ctx context.Context) (Permission, error)
+	GetGroupPermissions(filter FilterExpr, ctx context.Context) ([]GroupPermissionReference, error)
+	GetGroupPermission(filter FilterExpr, ctx context.Context) (GroupPermissionReference, error)
+	InsertGroupPermission(ctx context.Context, groupPermission GroupPermissionReference) (sql.Result, error)
 }
 
 type SqlDatabase struct {
@@ -100,4 +105,44 @@ func getDsn(conf config.Database) string {
 		conf.Name,
 		conf.TLSMode,
 	)
+}
+
+type scanFn[T any] func(*sql.Rows) (T, error)
+
+// getReferences executes a query and returns a list of items of type T.
+func getReferences[T any](
+	db *SqlDatabase,
+	query string,
+	filter FilterExpr,
+	ctx context.Context,
+	scan scanFn[T],
+) ([]T, error) {
+	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
+	if err != nil {
+		return nil, fmt.Errorf("failed to query references: %w", err)
+	}
+	defer closeRows()
+
+	var result []T
+
+	for rows.Next() {
+		item, err := scan(rows)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan reference: %w", err)
+		}
+
+		result = append(result, item)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("failed to iterate over rows: %w", err)
+	}
+
+	return result, nil
+}
+
+// isSingleElement returns true if the given slice contains exactly one element.
+func isSingleElement[T any](elements []T) bool {
+	return len(elements) == 1
 }

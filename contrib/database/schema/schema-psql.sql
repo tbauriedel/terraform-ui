@@ -23,7 +23,8 @@ VALUES
     (1, 'system', 'health', 'get'),
     (2, 'auth', 'user', 'add'),
     (3, 'auth', 'group', 'add'),
-    (4, 'auth', 'usergroup', 'add'); 
+    (4, 'auth', 'usergroup', 'add'),
+    (5, 'auth', 'grouppermission', 'add'); 
 
 CREATE TABLE user_groups (
     user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

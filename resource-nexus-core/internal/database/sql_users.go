@@ -7,9 +7,7 @@ import (
 )
 
 const (
-	TableNameUsers            string = "users"
-	TableNamePermissions      string = "permissions"
-	TableNameGroupPermissions string = "group_permissions"
+	TableNameUsers string = "users"
 )
 
 // GetUsers returns all users from the database found by the given filter.
@@ -17,11 +15,11 @@ func (db *SqlDatabase) GetUsers(filter FilterExpr, ctx context.Context) ([]User,
 	query := fmt.Sprintf("SELECT id, name, password_hash, is_admin FROM %s", TableNameUsers)
 
 	rows, closeRows, err := db.Select(query, filter, ctx) //nolint:sqlclosecheck
-	defer closeRows()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer closeRows()
 
 	var users []User
 

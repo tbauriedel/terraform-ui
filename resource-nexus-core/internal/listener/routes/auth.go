@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"strings"
 
 	"github.com/tbauriedel/resource-nexus-core/internal/database"
 )
@@ -141,8 +142,8 @@ func (routes *Routes) AddUserToGroup(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	
-	result, err := routes.DB.InsertUserGroupReference(r.Context(), userGroupRef)
+
+	_, err = routes.DB.InsertUserGroupReference(r.Context(), userGroupRef)
 	if err != nil {
 		http.Error(w,
 			BuildResponseMessage("failed to insert user group reference"),
@@ -151,16 +152,118 @@ func (routes *Routes) AddUserToGroup(w http.ResponseWriter, r *http.Request) {
 		routes.Logger.Error("failed to insert user group reference", "error", err)
 	}
 
-	rows, _ := result.RowsAffected()
-	if rows != 1 {
+	_, _ = w.Write([]byte(BuildResponseMessage("user group reference added")))
+}
+
+func (routes *Routes) AddPermissionToGroup(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	
+	// decode permission group from json body
+	permissionGroup, err := decodeJson[database.GroupPermissionReference](r)
+	if err != nil {
 		http.Error(w,
-			BuildResponseMessage("error while inserting user. check logs for more details"),
-			http.StatusInternalServerError,
+			BuildResponseMessage("invalid json"),
+			http.StatusBadRequest,
 		)
-		routes.Logger.Error("error while inserting user group reference", "error", err)
+		routes.Logger.Error("failed to decode permission group from body", "error", err)
 
 		return
 	}
 
-	_, _ = w.Write([]byte(BuildResponseMessage("user group reference added")))
+	// check if group exists. get group by name
+	group, err := routes.DB.GetGroup(database.Filter{
+		Key:      "name",
+		Operator: "=",
+		Value:    permissionGroup.GroupName,
+	}, r.Context())
+	if err != nil {
+		http.Error(w,
+			BuildResponseMessage("group not found"),
+			http.StatusBadRequest,
+		)
+		routes.Logger.Error("failed to get group", "error", err)
+
+		return
+	}
+
+	permissionGroup.GroupID = group.ID
+
+	// check if permission exists
+	// split permission string into category, resource and action
+	splitted := strings.Split(permissionGroup.Permission, ":")
+
+	// prepare filter
+	filter := database.LogicalFilter{
+		Operator: "AND",
+		Filters: []database.FilterExpr{
+			database.Filter{
+				Key:      "category",
+				Operator: "=",
+				Value:    splitted[0],
+			},
+			database.Filter{
+				Key:      "resource",
+				Operator: "=",
+				Value:    splitted[1],
+			},
+			database.Filter{
+				Key:      "action",
+				Operator: "=",
+				Value:    splitted[2],
+			},
+		},
+	}
+
+	permission, err := routes.DB.GetPermission(filter, r.Context())
+	if err != nil {
+		http.Error(w,
+			BuildResponseMessage("permission not found"),
+			http.StatusBadRequest,
+		)
+		routes.Logger.Error("failed to get permission", "error", err)
+
+		return
+	}
+
+	permissionGroup.PermissionID = permission.ID
+
+	// check if group already has permission
+	_, err = routes.DB.GetGroupPermission(database.LogicalFilter{
+		Operator: "AND",
+		Filters: []database.FilterExpr{
+			database.Filter{
+				Key:      "group_id",
+				Operator: "=",
+				Value:    group.ID,
+			},
+			database.Filter{
+				Key:      "permission_id",
+				Operator: "=",
+				Value:    permission.ID,
+			},
+		},
+	}, r.Context())
+	if err == nil {
+		http.Error(w,
+			BuildResponseMessage("permission already assigned to group"),
+			http.StatusBadRequest,
+		)
+		routes.Logger.Error("permission already assigned to group", "error", err)
+
+		return
+	}
+
+	// add permission to group
+	_, err = routes.DB.InsertGroupPermission(r.Context(), permissionGroup)
+	if err != nil {
+		http.Error(w,
+			BuildResponseMessage("failed to insert permission group reference"),
+			http.StatusInternalServerError,
+		)
+		routes.Logger.Error("failed to insert permission group reference", "error", err)
+
+		return
+	}
+
+	_, _ = w.Write([]byte(BuildResponseMessage("permission group reference added")))
 }

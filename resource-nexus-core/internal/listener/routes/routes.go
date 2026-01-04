@@ -44,6 +44,11 @@ func (routes *Routes) Get() []Route {
 			Path:        "/auth/usergroup/add",
 			HandlerFunc: routes.AddUserToGroup,
 		},
+		{
+			Method:      http.MethodPost,
+			Path:        "/auth/grouppermission/add",
+			HandlerFunc: routes.AddPermissionToGroup,
+		},
 	}
 }
 

@@ -24,8 +24,7 @@ func TestGetGroups(t *testing.T) {
 		logger:   logging.NewLoggerStdout(config.Logger{Type: "stdout", Level: "warn"}),
 	}
 
-	ctx := context.TODO()
-	groups, err := db.GetGroups(nil, ctx)
+	groups, err := db.GetGroups(nil, context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}

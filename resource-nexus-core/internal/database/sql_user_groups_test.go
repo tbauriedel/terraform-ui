@@ -24,8 +24,7 @@ func TestGetUserGroupReferences(t *testing.T) {
 		logger:   logging.NewLoggerStdout(config.Logger{Type: "stdout", Level: "warn"}),
 	}
 
-	ctx := context.TODO()
-	userGroupRefs, err := db.GetUserGroupReferences(nil, ctx)
+	userGroupRefs, err := db.GetUserGroupReferences(nil, context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}
